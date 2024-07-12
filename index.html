@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Synthesizer</title>
+</head>
+<body>
+    <h1>Upload an Image</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="image-input" name="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Output Image</h2>
+    <img id="output-image" src="" alt="Output Image" style="display: none;">
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image-input').files[0]);
+
+            const response = await fetch('/synthesize', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const outputImage = document.getElementById('output-image');
+                outputImage.src = url;
+                outputImage.style.display = 'block';
+            } else {
+                console.error('Error:', response.statusText);
+            }
+        });
+    </script>
+</body>
+</html>
